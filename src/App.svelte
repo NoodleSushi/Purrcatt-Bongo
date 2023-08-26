@@ -6,6 +6,7 @@
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
+  import spaceBgUrl from "./assets/space-bg.png";
 
   let bongoHi = new Tone.Player("audio/bongo-hi.wav").toDestination();
   let bongoLow = new Tone.Player("audio/bongo-low.wav").toDestination();
@@ -102,7 +103,7 @@
 
 <svelte:window on:keydown={keyDown} on:keyup={keyUp}/>
 
-<div class="background" style:opacity={Math.min(epicness * 3, 1)} style:background-position={`${elapsed}px ${elapsed}px`}/>
+<div class="background" style:background-image={`url(${spaceBgUrl})`} style:opacity={Math.min(epicness * 3, 1)} style:background-position={`${elapsed}px ${elapsed}px`}/>
 <div />
 <div class="ins" style:opacity={$insOpacity}>
   <center><img src="img/instructions.png" alt="instructions"></center>
@@ -126,7 +127,6 @@
 
   .background {
     position: fixed;
-    background-image: url("img/space-bg.png");
     height: 100vh;
     width: 100vw;
   }
