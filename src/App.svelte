@@ -5,11 +5,11 @@
   import Spamtector from "./lib/Spamtector";
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
-    import { onMount } from "svelte";
+  import { onMount } from "svelte";
 
-  let bongoHi = new Tone.Player("/audio/bongo-hi.wav").toDestination();
-  let bongoLow = new Tone.Player("/audio/bongo-low.wav").toDestination();
-  let bongoTrip = new Tone.Player("/audio/bongotrip.mp3").toDestination();
+  let bongoHi = new Tone.Player("audio/bongo-hi.wav").toDestination();
+  let bongoLow = new Tone.Player("audio/bongo-low.wav").toDestination();
+  let bongoTrip = new Tone.Player("audio/bongotrip.mp3").toDestination();
   bongoTrip.loop = true;
   bongoTrip.fadeIn = 5;
   bongoTrip.fadeOut = 0.5;
@@ -105,13 +105,13 @@
 <div class="background" style:opacity={Math.min(epicness * 3, 1)} style:background-position={`${elapsed}px ${elapsed}px`}/>
 <div />
 <div class="ins" style:opacity={$insOpacity}>
-  <center><img src="/img/instructions.png" alt="instructions"></center>
+  <center><img src="img/instructions.png" alt="instructions"></center>
 </div>
 <div class="content">
   <div
     style:transform={`translate(${(epicness * 50 * makeNoise(elapsed * speed, 0))}px, ${(epicness * 50 * makeNoise(elapsed * speed, 100))}px) scale(${epicness * 0.5 + 1}, ${epicness * 0.5 + 1})`}
   >
-    <ImageSequence width="500px" dir="/img/cat-bongo" {idx}/>
+    <ImageSequence width="500px" dir="img/cat-bongo" {idx}/>
   </div>
 </div>
 
@@ -126,7 +126,7 @@
 
   .background {
     position: fixed;
-    background-image: url("/img/space-bg.png");
+    background-image: url("img/space-bg.png");
     height: 100vh;
     width: 100vw;
   }
