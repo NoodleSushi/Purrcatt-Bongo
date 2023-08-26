@@ -126,7 +126,7 @@
 
   .background {
     position: fixed;
-    background-image: url("img/space-bg.png");
+    background-image: url("./img/space-bg.png");
     height: 100vh;
     width: 100vw;
   }
