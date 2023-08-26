@@ -37,7 +37,6 @@ export default class Spamtector {
     if (this.lastTimePressed) {
       const elapsed = now - this.lastTimePressed;
       this.avgInterval = this.avgInterval ? (this.avgInterval! + elapsed) / 2.0 : elapsed;
-      console.log(this.avgInterval);
       if (!this.lastTimeUnderMaxInterval && this.avgInterval < this.maxInterval) {
         this.lastTimeUnderMaxInterval = now;
       } else if (this.lastTimeUnderMaxInterval && this.avgInterval >= this.maxInterva2) {
