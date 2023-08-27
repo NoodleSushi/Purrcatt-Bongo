@@ -164,13 +164,12 @@
   </p>
 </div>
 {#if !isActive}
-  <div class="layer content"
-    on:touchstart={startContext} 
-    on:mousedown={startContext}
+  <button class="layer content borderless"
+    on:click={startContext} 
     style:background-color="#fffffff0"
   >
     <img src="img/mobile.png" alt="mobileins"/>
-  </div>
+  </button>
 {/if}
 
 <style>
@@ -197,5 +196,9 @@
 
   .full-height {
     height: 100vh;
+  }
+
+  .borderless {
+    border: 0 none #000;
   }
 </style>
