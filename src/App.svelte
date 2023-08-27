@@ -9,6 +9,12 @@
   import { onMount } from "svelte";
   import spaceBgUrl from "./assets/space-bg.png";
 
+  let isActive = !(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i));
+  async function startContext() {
+    await Tone.start();
+    isActive = true;
+  }
+
   const makeNoise = makeNoise2D();
   const spamtector = new Spamtector();
   const isSpammingStore = spamtector.isSpamming$;
@@ -116,7 +122,6 @@
 </script>
 
 <svelte:window on:keydown={keyDown} on:keyup={keyUp}/>
-
 <div class="layer full-height"
   style:background-image={`url(${spaceBgUrl})`} 
   style:opacity={Math.min(epicness * 3, 1)} 
@@ -158,6 +163,15 @@
     </a>
   </p>
 </div>
+{#if !isActive}
+  <div class="layer content"
+    on:touchstart={startContext} 
+    on:mousedown={startContext}
+    style:background-color="#fffffff0"
+  >
+    <img src="img/mobile.png" alt="mobileins"/>
+  </div>
+{/if}
 
 <style>
   .content {
