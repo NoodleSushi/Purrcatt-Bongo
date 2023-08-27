@@ -8,66 +8,28 @@
   import { onMount } from "svelte";
   import spaceBgUrl from "./assets/space-bg.png";
 
-  let bongoHi = new Tone.Player("audio/bongo-hi.wav").toDestination();
-  let bongoLow = new Tone.Player("audio/bongo-low.wav").toDestination();
-  let bongoTrip = new Tone.Player("audio/bongotrip.mp3").toDestination();
-  bongoTrip.loop = true;
-  bongoTrip.fadeIn = 5;
-  bongoTrip.fadeOut = 0.5;
-  let idx = 0;
-  let epicness = 0;
-  let spamtector = new Spamtector();
-  const insOpacity = tweened(0, {duration: 400, easing: cubicOut});
-  const isSpammingStore = spamtector.isSpamming$;
-  isSpammingStore.subscribe((isSpamming) => {
-    if (isSpamming)
-      bongoTrip.start();
-    else
-      bongoTrip.stop();
-  })
-
   const makeNoise = makeNoise2D();
+  const spamtector = new Spamtector();
+  const isSpammingStore = spamtector.isSpamming$;
+  const insOpacity = tweened(0, {duration: 400, easing: cubicOut});
 
-  const keyDown = (e: KeyboardEvent) => {
-    e.preventDefault();
-    if (e.repeat)
-      return;
-    switch (e.key) {
-      case "z":
-        bongoLow.start();
-        spamtector.press();
-        idx |= 0b10;
-        break;
-      case "x":
-        bongoHi.start();
-        spamtector.press();
-        idx |= 0b01;
-        break;
-    }
-  };
-
-  const keyUp = (e: KeyboardEvent) => {
-    e.preventDefault();
-    if (!e.repeat) {
-      switch (e.key) {
-        case "z":
-          idx &= ~0b10;
-          break;
-        case "x":
-          idx &= ~0b01;
-          break;
-      }
-    }
-  }
-
-  function lerp(a: number, b: number, alpha: number) {
-    return a + alpha * (b - a);
-  }
+  const bongoHiPlayer = new Tone.Player("audio/bongo-hi.wav").toDestination();
+  const bongoLowPlayer = new Tone.Player("audio/bongo-low.wav").toDestination();
+  const bongoTripPayer = new Tone.Player({
+    url: "audio/bongotrip.mp3", 
+    loop: true, 
+    fadeIn: 5, 
+    fadeOut: 0.5}
+  ).toDestination();
 
   let startTime: DOMHighResTimeStamp;
   let lastTime: DOMHighResTimeStamp;
   let elapsed: number = 0;
-  let speed: number = 0.008;
+  const speed: number = 0.008;
+
+  function lerp(a: number, b: number, alpha: number) {
+    return a + alpha * (b - a);
+  }
 
   requestAnimationFrame(update);
   function update(time: DOMHighResTimeStamp) {
@@ -88,31 +50,74 @@
     lastTime = time;
   }
 
+  let catFrameIdx = 0;
+  let epicness = 0;
+  $: catScale = epicness * 0.5 + 1;
+  $: catX = epicness * 50 * makeNoise(elapsed * speed, 0);
+  $: catY = epicness * 50 * makeNoise(elapsed * speed, 100);
+
+  isSpammingStore.subscribe((isSpamming) => {
+    if (isSpamming)
+      bongoTripPayer.start();
+    else
+      bongoTripPayer.stop();
+  })
+
+  const keyDown = (e: KeyboardEvent) => {
+    e.preventDefault();
+    if (e.repeat)
+      return;
+    switch (e.key) {
+      case "z":
+        bongoLowPlayer.start();
+        spamtector.press();
+        catFrameIdx |= 0b10;
+        break;
+      case "x":
+        bongoHiPlayer.start();
+        spamtector.press();
+        catFrameIdx |= 0b01;
+        break;
+    }
+  };
+
+  const keyUp = (e: KeyboardEvent) => {
+    e.preventDefault();
+    if (e.repeat)
+      return;
+    switch (e.key) {
+      case "z":
+        catFrameIdx &= ~0b10;
+        break;
+      case "x":
+        catFrameIdx &= ~0b01;
+        break;
+    }
+  }
+
   onMount(() => {
     insOpacity.set(1);
     setTimeout(() => {
       insOpacity.set(0);
     }, 4000);
   });
-
 </script>
-
-<svelte:head>
-  <title>Purrcatt Bongo</title>
-</svelte:head>
 
 <svelte:window on:keydown={keyDown} on:keyup={keyUp}/>
 
-<div class="background" style:background-image={`url(${spaceBgUrl})`} style:opacity={Math.min(epicness * 3, 1)} style:background-position={`${elapsed}px ${elapsed}px`}/>
-<div />
-<div class="ins" style:opacity={$insOpacity}>
+<div class="layer"
+  style:background-image={`url(${spaceBgUrl})`} 
+  style:opacity={Math.min(epicness * 3, 1)} 
+  style:background-position={`${elapsed}px ${elapsed}px`}
+/>
+<div class="layer" style:opacity={$insOpacity}>
   <center><img src="img/instructions.png" alt="instructions"></center>
 </div>
 <div class="content">
   <div
-    style:transform={`translate(${(epicness * 50 * makeNoise(elapsed * speed, 0))}px, ${(epicness * 50 * makeNoise(elapsed * speed, 100))}px) scale(${epicness * 0.5 + 1}, ${epicness * 0.5 + 1})`}
+    style:transform={`translate(${catX}px, ${catY}px) scale(${catScale}, ${catScale})`}
   >
-    <ImageSequence width="500px" dir="img/cat-bongo" {idx}/>
+    <ImageSequence width="500px" dir="img/cat-bongo" idx={catFrameIdx}/>
   </div>
 </div>
 
@@ -125,14 +130,9 @@
     overflow: hidden;
   }
 
-  .background {
+  .layer {
     position: fixed;
     height: 100vh;
-    width: 100vw;
-  }
-
-  .ins {
-    position: fixed;
     width: 100vw;
   }
 </style>
