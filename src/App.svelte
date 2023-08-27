@@ -89,28 +89,30 @@
   }
 
   const keyDown = (e: KeyboardEvent) => {
-    e.preventDefault();
     if (e.repeat)
       return;
     switch (e.key) {
       case "z":
+        e.preventDefault();
         bongoInteract(0, true);
         break;
       case "x":
+        e.preventDefault();
         bongoInteract(1, true);
         break;
     }
   };
 
   const keyUp = (e: KeyboardEvent) => {
-    e.preventDefault();
     if (e.repeat)
       return;
     switch (e.key) {
       case "z":
+        e.preventDefault();
         bongoInteract(0, false);
         break;
       case "x":
+        e.preventDefault();
         bongoInteract(1, false);
         break;
     }
