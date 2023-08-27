@@ -3,6 +3,7 @@
   import * as Tone from "tone";
   import { makeNoise2D } from "fast-simplex-noise";
   import Spamtector from "./lib/Spamtector";
+  import Interatector from "./lib/Interatector";
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
@@ -11,6 +12,8 @@
   const makeNoise = makeNoise2D();
   const spamtector = new Spamtector();
   const isSpammingStore = spamtector.isSpamming$;
+  const interatector = new Interatector();
+  const interactedStore = interatector.interacted$;
   const insOpacity = tweened(0, {duration: 400, easing: cubicOut});
 
   const bongoHiPlayer = new Tone.Player("audio/bongo-hi.wav").toDestination();
@@ -45,7 +48,7 @@
     if (spamtector.isSpamming) {
       epicness = Math.min(epicness + dt * 0.0001, 1);
     } else {
-      epicness = lerp(epicness, 0, Math.pow(0.5, dt * 0.18));
+      epicness = lerp(epicness, 0, Math.pow(0.6, dt * 0.18));
     }
     lastTime = time;
   }
@@ -61,7 +64,23 @@
       bongoTripPayer.start();
     else
       bongoTripPayer.stop();
-  })
+  });
+
+  interactedStore.subscribe((interacted) => {
+    insOpacity.set(interacted ? 0 : 1);
+  });
+
+  const players: Tone.Player[] = [bongoLowPlayer, bongoHiPlayer];
+  function bongoInteract(hand: number, press: boolean) {
+    if (press) {
+      players[hand].start();
+      spamtector.press();
+      interatector.interact();
+      catFrameIdx |= 0b10 >> hand;
+    } else {
+      catFrameIdx &= ~(0b10 >> hand);
+    }
+  }
 
   const keyDown = (e: KeyboardEvent) => {
     e.preventDefault();
@@ -69,14 +88,10 @@
       return;
     switch (e.key) {
       case "z":
-        bongoLowPlayer.start();
-        spamtector.press();
-        catFrameIdx |= 0b10;
+        bongoInteract(0, true);
         break;
       case "x":
-        bongoHiPlayer.start();
-        spamtector.press();
-        catFrameIdx |= 0b01;
+        bongoInteract(1, true);
         break;
     }
   };
@@ -87,25 +102,22 @@
       return;
     switch (e.key) {
       case "z":
-        catFrameIdx &= ~0b10;
+        bongoInteract(0, false);
         break;
       case "x":
-        catFrameIdx &= ~0b01;
+        bongoInteract(1, false);
         break;
     }
   }
 
   onMount(() => {
     insOpacity.set(1);
-    setTimeout(() => {
-      insOpacity.set(0);
-    }, 4000);
   });
 </script>
 
 <svelte:window on:keydown={keyDown} on:keyup={keyUp}/>
 
-<div class="layer"
+<div class="layer full-height"
   style:background-image={`url(${spaceBgUrl})`} 
   style:opacity={Math.min(epicness * 3, 1)} 
   style:background-position={`${elapsed}px ${elapsed}px`}
@@ -113,12 +125,38 @@
 <div class="layer" style:opacity={$insOpacity}>
   <center><img src="img/instructions.png" alt="instructions"></center>
 </div>
-<div class="content">
+<div class="layer content">
   <div
     style:transform={`translate(${catX}px, ${catY}px) scale(${catScale}, ${catScale})`}
   >
     <ImageSequence width="500px" dir="img/cat-bongo" idx={catFrameIdx}/>
   </div>
+</div>
+<div class="layer touch full-height">
+  <div class="touchpad"
+    on:mousedown={() => bongoInteract(0, true)}
+    on:mouseup={() => bongoInteract(0, false)}
+    on:touchstart={() => bongoInteract(0, true)}
+    on:touchend={() => bongoInteract(0, false)}
+  />
+  <div class="touchpad"
+    on:mousedown={() => bongoInteract(1, true)}
+    on:mouseup={() => bongoInteract(1, false)}
+    on:touchstart={() => bongoInteract(1, true)} 
+    on:touchend={() => bongoInteract(1, false)} 
+  />
+</div>
+<div class="layer" style:opacity={$insOpacity}>
+  <p>
+    <a href="https://twitter.com/noodle_sushi" target="_blank">
+      <img src="img/twthandle1.png" alt="twthandle1" height="32px"/>
+    </a>
+  </p>
+  <p>
+    <a href="https://twitter.com/hontakai" target="_blank">
+      <img src="img/twthandle2.png" alt="twthandle2" height="32px"/>
+    </a>
+  </p>
 </div>
 
 <style>
@@ -129,10 +167,21 @@
     height: 100vh;
     overflow: hidden;
   }
+  
+  .touch {
+    display: flex;
+  }
+
+  .touchpad {
+    flex-grow: 2;
+  }
 
   .layer {
     position: fixed;
-    height: 100vh;
     width: 100vw;
+  }
+
+  .full-height {
+    height: 100vh;
   }
 </style>
