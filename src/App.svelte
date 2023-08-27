@@ -139,16 +139,16 @@
 </div>
 <div class="layer touch full-height">
   <div class="touchpad"
-    on:mousedown={() => bongoInteract(0, true)}
-    on:mouseup={() => bongoInteract(0, false)}
-    on:touchstart={() => bongoInteract(0, true)}
-    on:touchend={() => bongoInteract(0, false)}
+    on:mousedown={(e) => {if (e.button == 0) bongoInteract(0, true)}}
+    on:mouseup={(e) => {if (e.button == 0) bongoInteract(0, false)}}
+    on:touchstart|preventDefault ={() => bongoInteract(0, true)}
+    on:touchend|preventDefault ={() => bongoInteract(0, false)}
   />
   <div class="touchpad"
-    on:mousedown={() => bongoInteract(1, true)}
-    on:mouseup={() => bongoInteract(1, false)}
-    on:touchstart={() => bongoInteract(1, true)} 
-    on:touchend={() => bongoInteract(1, false)} 
+    on:mousedown={(e) => {if (e.button == 0) bongoInteract(1, true)}}
+    on:mouseup={(e) => {if (e.button == 0) bongoInteract(1, false)}}
+    on:touchstart|preventDefault ={() => bongoInteract(1, true)} 
+    on:touchend|preventDefault ={() => bongoInteract(1, false)} 
   />
 </div>
 <div class="layer" style:opacity={$insOpacity}>
