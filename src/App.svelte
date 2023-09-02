@@ -140,12 +140,14 @@
   </div>
 </div>
 <div class="layer touch full-height">
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="touchpad"
     on:mousedown={(e) => {if (e.button == 0) bongoInteract(0, true)}}
     on:mouseup={(e) => {if (e.button == 0) bongoInteract(0, false)}}
     on:touchstart|preventDefault ={() => bongoInteract(0, true)}
     on:touchend|preventDefault ={() => bongoInteract(0, false)}
   />
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="touchpad"
     on:mousedown={(e) => {if (e.button == 0) bongoInteract(1, true)}}
     on:mouseup={(e) => {if (e.button == 0) bongoInteract(1, false)}}
