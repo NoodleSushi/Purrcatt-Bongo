@@ -78,12 +78,12 @@
 
   const players: Tone.Player[] = [bongoLowPlayer, bongoHiPlayer];
   function bongoInteract(hand: number, press: boolean) {
-    if (press) {
+    if (press && (catFrameIdx & (0b10 >> hand)) == 0) {
       players[hand].start();
       spamtector.press();
       interatector.interact();
       catFrameIdx |= 0b10 >> hand;
-    } else {
+    } else if (!press && (catFrameIdx & (0b10 >> hand)) != 0) {
       catFrameIdx &= ~(0b10 >> hand);
     }
   }
