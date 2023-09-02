@@ -4,10 +4,15 @@
   import { makeNoise2D } from "fast-simplex-noise";
   import Spamtector from "./lib/Spamtector";
   import Interatector from "./lib/Interatector";
+  import MIDItector from "./lib/MIDItector";
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
   import { onMount } from "svelte";
   import spaceBgUrl from "./assets/space-bg.png";
+
+  MIDItector.init();
+  MIDItector.noteOn = (note, _) => bongoInteract((Math.floor(note / 2)) % 2, true); 
+  MIDItector.noteOff = (note) => bongoInteract((Math.floor(note / 2)) % 2, false);  
 
   let isActive = !(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i));
   async function startContext() {
