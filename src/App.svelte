@@ -14,7 +14,7 @@
   MIDItector.noteOn = (note, _) => bongoInteract((Math.floor(note / 2)) % 2, true); 
   MIDItector.noteOff = (note) => bongoInteract((Math.floor(note / 2)) % 2, false);  
 
-  let isActive = !(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i));
+  let isActive = false;
   async function startContext() {
     await Tone.start();
     isActive = true;
